@@ -1,0 +1,30 @@
+{
+  "title": "Systemair VSR150",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to your Systemair",
+        "description": "Enter Modbus TCP settings",
+        "data": {
+          "host": "Host",
+          "port": "Port",
+          "unit_id": "Unit ID",
+          "scan_interval": "Scan interval (s)"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "This host is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Systemair options",
+        "data": {
+          "scan_interval": "Scan interval (s)"
+        }
+      }
+    }
+  }
+}

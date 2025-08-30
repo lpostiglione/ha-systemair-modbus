@@ -1,0 +1,6 @@
+{
+    "name": "Systemair VSR150",
+    "render_readme": true,
+    "hacs": "0.1.0",
+    "homeassistant": "2022.12.0"
+}
