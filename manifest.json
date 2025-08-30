@@ -1,6 +1,6 @@
 {
   "domain": "systemair",
-  "name": "Systemair VSR150",
+  "name": "Systemair Modbus Home Assistant Integration",
   "version": "0.1.0",
   "documentation": "",
   "requirements": ["pymodbus>=3.9.2,<4.0.0"],
