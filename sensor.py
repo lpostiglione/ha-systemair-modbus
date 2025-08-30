@@ -18,6 +18,7 @@ from .const import (
     REG_SYSTEM_TYPE, REG_SYSTEM_PROG_V_HIGH, REG_SYSTEM_PROG_V_MID, REG_SYSTEM_PROG_V_LOW,
     REG_SYSTEM_BOOT_PROG_V_HIGH, REG_SYSTEM_BOOT_PROG_V_MID, REG_SYSTEM_BOOT_PROG_V_LOW,
     REG_SYSTEM_PROG_STATE, SYSTEM_TYPE_MAP,
+    REG_HC_PREHEATER_TYPE,
 )
 
 @dataclass
@@ -33,7 +34,6 @@ SENSORS: list[SensorDesc] = [
     SensorDesc("Heating target", REG_HC_TEMP_SP, "°C", SensorDeviceClass.TEMPERATURE, None),
     SensorDesc("Supply air temperature", REG_HC_TEMP_IN1, "°C", SensorDeviceClass.TEMPERATURE, SCALE_TENTH),
     SensorDesc("Extract air temperature", REG_HC_TEMP_IN2, "°C", SensorDeviceClass.TEMPERATURE, SCALE_TENTH),
-    SensorDesc("Exhaust/Preheater temperature", REG_HC_TEMP_IN3, "°C", SensorDeviceClass.TEMPERATURE, SCALE_TENTH),
     SensorDesc("Overheat/Frost temperature", REG_HC_TEMP_IN4, "°C", SensorDeviceClass.TEMPERATURE, SCALE_TENTH),
     SensorDesc("Outdoor air temperature", REG_HC_TEMP_IN5, "°C", SensorDeviceClass.TEMPERATURE, SCALE_TENTH),
     SensorDesc("Supply fan PWM", REG_FAN_SF_PWM, "%", None, None),
@@ -84,6 +84,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     if cooler_type != 0:
         entities.append(SystemairRegisterSensor(coord, name, entry_id, SensorDesc(
             "Cooler output", REG_HC_WC_SIGNAL, "%", None, None
+        )))
+
+    # Add Exhaust/Preheater temperature only if a preheater is installed
+    try:
+        preheater_type = int(dmap.get(REG_HC_PREHEATER_TYPE, 0))
+    except (TypeError, ValueError):
+        preheater_type = 0
+    if preheater_type != 0:
+        entities.append(SystemairRegisterSensor(coord, name, entry_id, SensorDesc(
+            "Exhaust/Preheater temperature", REG_HC_TEMP_IN3, "°C", SensorDeviceClass.TEMPERATURE, SCALE_TENTH
         )))
 
     # Diagnostic sensors (disabled by default)
