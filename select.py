@@ -11,7 +11,7 @@ LEVELS = {"Off":0, "15 °C":1, "16 °C":2, "17 °C":3, "18 °C":4, "19 °C":5}
 INV_LEVELS = {v:k for k,v in LEVELS.items()}
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
-    data = hass.data[DOMAIN][entry.entry_id]
+    data = entry.runtime_data
     coord = data["coordinator"]
     name = data["name"]
     entry_id = entry.entry_id

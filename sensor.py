@@ -40,7 +40,7 @@ SENSORS: list[SensorDesc] = [
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
-    data = hass.data[DOMAIN][entry.entry_id]
+    data = entry.runtime_data
     coord = data["coordinator"]
     name = data["name"]
     entry_id = entry.entry_id

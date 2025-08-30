@@ -15,6 +15,9 @@
     },
     "abort": {
       "already_configured": "This host is already configured."
+    },
+    "error": {
+      "cannot_connect": "Failed to connect. Please check host/port/unit and try again."
     }
   },
   "options": {

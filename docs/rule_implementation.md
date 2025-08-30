@@ -15,10 +15,10 @@
 - [X] `entity-event-setup` - Entity events are subscribed in the correct lifecycle methods
 - [X] `entity-unique-id` - Entities have a unique ID
 - [X] `has-entity-name` - Entities use has_entity_name = True
-- [ ] `runtime-data` - Use ConfigEntry.runtime_data to store runtime data
-- [ ] `test-before-configure` - Test a connection in the config flow
-- [ ] `test-before-setup` - Check during integration initialization if we are able to set it up correctly
-- [ ] `unique-config-entry` - Don't allow the same device or service to be able to be set up twice
+- [X] `runtime-data` - Use ConfigEntry.runtime_data to store runtime data
+- [X] `test-before-configure` - Test a connection in the config flow
+- [X] `test-before-setup` - Check during integration initialization if we are able to set it up correctly
+- [X] `unique-config-entry` - Don't allow the same device or service to be able to be set up twice
 
 ## Silver
 - [ ] `action-exceptions` - Service actions raise exceptions when encountering failures
