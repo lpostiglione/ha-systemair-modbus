@@ -29,7 +29,7 @@ class SystemairFan(FanEntity):
     def __init__(self, coordinator, name):
         self.coordinator = coordinator
         self._attr_unique_id = "systemair_fan"
-        self._attr_name = f"{name} Fan"
+        self._attr_has_entity_name = True
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, "systemair_vsr150")},
             name=name,
