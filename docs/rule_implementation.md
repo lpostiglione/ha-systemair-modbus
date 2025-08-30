@@ -12,7 +12,7 @@
 - [X] `docs-high-level-description` - The documentation includes a high-level description of the integration brand, product, or service
 - [X] `docs-installation-instructions` - The documentation provides step-by-step installation instructions for the integration, including, if needed, prerequisites
 - [X] `docs-removal-instructions` - The documentation provides removal instructions
-- [ ] `entity-event-setup` - Entity events are subscribed in the correct lifecycle methods
+- [X] `entity-event-setup` - Entity events are subscribed in the correct lifecycle methods
 - [X] `entity-unique-id` - Entities have a unique ID
 - [ ] `has-entity-name` - Entities use has_entity_name = True
 - [ ] `runtime-data` - Use ConfigEntry.runtime_data to store runtime data
