@@ -33,7 +33,7 @@
 - [ ] `test-coverage` - Above 95% test coverage for all integration modules
 
 ## Gold
-- [ ] `devices` - The integration creates devices
+- [X] `devices` - The integration creates devices
 - [ ] `diagnostics` - Implements diagnostics
 - [ ] `discovery-update-info` - Integration uses discovery info to update network information
 - [ ] `discovery` - Devices can be discovered
