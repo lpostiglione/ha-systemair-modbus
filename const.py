@@ -6,19 +6,36 @@ CONF_UNIT_ID = "unit_id"
 CONF_SCAN_INTERVAL = "scan_interval"
 # Registers (Systemair D24810)
 REG_FAN_SPEED_LEVEL = 101  # 0 Off, 1 Low, 2 Medium, 3 High
+REG_FAN_SF_PWM = 109  # 0..100 % (0-10V)
+REG_FAN_EF_PWM = 110  # 0..100 % (0-10V)
 REG_FAN_SF_RPM = 111
 REG_FAN_EF_RPM = 112
 
+# Heating/Cooling
+REG_HC_HEATER_TYPE = 201  # 0: No heater, 1: Water, 2: Electrical, 3: Other
+REG_HC_COOLER_TYPE = 202  # 0: No cooler, 1: Water cooler
+REG_HC_WC_SIGNAL = 204    # Cooler output (%)
+REG_HC_WH_SIGNAL = 205    # Analog heater output (%)
 REG_HC_TEMP_LVL = 207  # 0 Off/Summer, 1..5 levels
 REG_HC_TEMP_SP = 208  # readback °C (plain)
 
 REG_HC_TEMP_IN1 = 214  # Supply (x10 °C)
 REG_HC_TEMP_IN2 = 215  # Extract (x10 °C)
+REG_HC_TEMP_IN3 = 216  # Exhaust/Preheater (x10 °C)
 REG_HC_TEMP_IN4 = 217  # Overheat/Frost (x10 °C)
 REG_HC_TEMP_IN5 = 218  # Outdoor (x10 °C)
+REG_HC_PREHEATER_TYPE = 220  # 0: No preheater, 1: Electrical preheater
 
+# Rotor / Damper
 REG_ROTOR_STATE = 351  # 0..11
+REG_DAMPER_PWM = 301   # 0..100 % (0-10V)
 
+# RH sensor
+REG_RH_SENSOR_VALUE = 381
+REG_RH_SENSOR_DATA_VALID = 383  # 1 if valid data available
+REG_RH_SENSOR_PRESENT = 655  # 0 Not used, 1 Connected and used
+
+# Filter
 REG_FILTER_PER = 601  # months
 REG_FILTER_DAYS = 602  # days
 

@@ -8,8 +8,11 @@ from .entity import SystemairEntity
 
 from .const import (
     DOMAIN, SCALE_TENTH,
-    REG_FAN_SF_RPM, REG_FAN_EF_RPM,
-    REG_HC_TEMP_SP, REG_HC_TEMP_IN1, REG_HC_TEMP_IN2, REG_HC_TEMP_IN4, REG_HC_TEMP_IN5,
+    REG_FAN_SF_PWM, REG_FAN_EF_PWM, REG_FAN_SF_RPM, REG_FAN_EF_RPM,
+    REG_HC_TEMP_SP, REG_HC_TEMP_IN1, REG_HC_TEMP_IN2, REG_HC_TEMP_IN3, REG_HC_TEMP_IN4, REG_HC_TEMP_IN5,
+    REG_HC_HEATER_TYPE, REG_HC_COOLER_TYPE, REG_HC_WC_SIGNAL, REG_HC_WH_SIGNAL,
+    REG_RH_SENSOR_PRESENT, REG_RH_SENSOR_DATA_VALID, REG_RH_SENSOR_VALUE,
+    REG_DAMPER_PWM,
     REG_ROTOR_STATE, REG_FILTER_PER, REG_FILTER_DAYS,
     ROTOR_STATE_MAP,
     REG_SYSTEM_TYPE, REG_SYSTEM_PROG_V_HIGH, REG_SYSTEM_PROG_V_MID, REG_SYSTEM_PROG_V_LOW,
@@ -30,10 +33,14 @@ SENSORS: list[SensorDesc] = [
     SensorDesc("Heating target", REG_HC_TEMP_SP, "°C", SensorDeviceClass.TEMPERATURE, None),
     SensorDesc("Supply air temperature", REG_HC_TEMP_IN1, "°C", SensorDeviceClass.TEMPERATURE, SCALE_TENTH),
     SensorDesc("Extract air temperature", REG_HC_TEMP_IN2, "°C", SensorDeviceClass.TEMPERATURE, SCALE_TENTH),
+    SensorDesc("Exhaust/Preheater temperature", REG_HC_TEMP_IN3, "°C", SensorDeviceClass.TEMPERATURE, SCALE_TENTH),
     SensorDesc("Overheat/Frost temperature", REG_HC_TEMP_IN4, "°C", SensorDeviceClass.TEMPERATURE, SCALE_TENTH),
     SensorDesc("Outdoor air temperature", REG_HC_TEMP_IN5, "°C", SensorDeviceClass.TEMPERATURE, SCALE_TENTH),
+    SensorDesc("Supply fan PWM", REG_FAN_SF_PWM, "%", None, None),
+    SensorDesc("Extract fan PWM", REG_FAN_EF_PWM, "%", None, None),
     SensorDesc("Supply fan RPM", REG_FAN_SF_RPM, "rpm", None, None),
     SensorDesc("Extract fan RPM", REG_FAN_EF_RPM, "rpm", None, None),
+    SensorDesc("Damper position", REG_DAMPER_PWM, "%", None, None),
     SensorDesc("Filter period", REG_FILTER_PER, "months", None, None),
     SensorDesc("Filter days since change", REG_FILTER_DAYS, "days", None, None),
 ]
@@ -46,6 +53,38 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     entry_id = entry.entry_id
     entities = [SystemairRegisterSensor(coord, name, entry_id, d) for d in SENSORS]
     entities.append(SystemairRotorStateText(coord, name, entry_id))  # friendly rotor text
+
+    # Conditionally add sensors based on hardware support
+    dmap = coord.data or {}
+    try:
+        rh_present = int(dmap.get(REG_RH_SENSOR_PRESENT, 0)) == 1
+        rh_valid = int(dmap.get(REG_RH_SENSOR_DATA_VALID, 0)) == 1
+    except (TypeError, ValueError):
+        rh_present = False
+        rh_valid = False
+    if rh_present and rh_valid:
+        entities.append(SystemairRegisterSensor(coord, name, entry_id, SensorDesc(
+            "Relative humidity", REG_RH_SENSOR_VALUE, "%", SensorDeviceClass.HUMIDITY, None
+        )))
+
+    try:
+        heater_type = int(dmap.get(REG_HC_HEATER_TYPE, 0))
+    except (TypeError, ValueError):
+        heater_type = 0
+    # Analog heater output is meaningful for water heater (type=1)
+    if heater_type == 1:
+        entities.append(SystemairRegisterSensor(coord, name, entry_id, SensorDesc(
+            "Heater output", REG_HC_WH_SIGNAL, "%", None, None
+        )))
+
+    try:
+        cooler_type = int(dmap.get(REG_HC_COOLER_TYPE, 0))
+    except (TypeError, ValueError):
+        cooler_type = 0
+    if cooler_type != 0:
+        entities.append(SystemairRegisterSensor(coord, name, entry_id, SensorDesc(
+            "Cooler output", REG_HC_WC_SIGNAL, "%", None, None
+        )))
 
     # Diagnostic sensors (disabled by default)
     entities.extend([
