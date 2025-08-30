@@ -34,7 +34,6 @@ SENSORS: list[SensorDesc] = [
     SensorDesc("Systemair Outdoor Air Temp", REG_HC_TEMP_IN5, "°C", SensorDeviceClass.TEMPERATURE, SCALE_TENTH),
     SensorDesc("Systemair Supply Fan RPM", REG_FAN_SF_RPM, "rpm", None, None),
     SensorDesc("Systemair Extract Fan RPM", REG_FAN_EF_RPM, "rpm", None, None),
-    SensorDesc("Systemair Rotor State (raw)", REG_ROTOR_STATE, None, None, None),
     SensorDesc("Systemair Filter Period", REG_FILTER_PER, "months", None, None),
     SensorDesc("Systemair Filter Days Since Change", REG_FILTER_DAYS, "days", None, None),
 ]
