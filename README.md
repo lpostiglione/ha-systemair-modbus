@@ -47,3 +47,9 @@ Manual installation:
 - You can later adjust the scan interval from the integration's Options.
 
 For technical details about the unit’s Modbus registers used by this integration, see docs/modbus_registers.md.
+
+## Removing the integration
+
+This integration follows standard integration removal. No extra steps are required.
+
+{% include integrations/remove_device_service.md %}
