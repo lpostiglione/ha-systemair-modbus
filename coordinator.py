@@ -60,7 +60,7 @@ class SystemairCoordinator(DataUpdateCoordinator[dict[int, int]]):
             # 601..602 (filter info)
             rr4 = await self.client.read_holding_registers(address=600, count=2, slave=self.unit)
             # 501..508 (system parameters)
-            rr_sys = await self.client.read_holding_registers(address=501, count=8, slave=self.unit)
+            rr_sys = await self.client.read_holding_registers(address=500, count=8, slave=self.unit)
 
             if any(r.isError() for r in (rr1, rr2, rr3, rr_damper, rr_rh, rr_defr, rr4, rr_sys)):
                 raise UpdateFailed("Modbus read error")
