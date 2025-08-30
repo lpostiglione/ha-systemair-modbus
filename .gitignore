@@ -1,3 +1,4 @@
 *.pdf
 .DS_Store
 /docs/rules
+__pycache__
