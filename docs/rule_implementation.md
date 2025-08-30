@@ -1,19 +1,19 @@
 ## Bronze
-- [ ] `action-setup` - Service actions are registered in async_setup
-- [ ] `appropriate-polling` - If it's a polling integration, set an appropriate polling interval
-- [ ] `brands` - Has branding assets available for the integration
-- [ ] `common-modules` - Place common patterns in common modules
-- [ ] `config-flow-test-coverage` - Full test coverage for the config flow
-- [ ] `config-flow` - Integration needs to be able to be set up via the UI
+- [X] `action-setup` - Service actions are registered in async_setup
+- [X] `appropriate-polling` - If it's a polling integration, set an appropriate polling interval
+- [X] `brands` - Has branding assets available for the integration
+- [X] `common-modules` - Place common patterns in common modules
+- [X] `config-flow-test-coverage` - Full test coverage for the config flow
+- [X] `config-flow` - Integration needs to be able to be set up via the UI
     - [ ] Uses `data_description` to give context to fields
-    - [ ] Uses `ConfigEntry.data` and `ConfigEntry.options` correctly
-- [ ] `dependency-transparency` - Dependency transparency
-- [ ] `docs-actions` - The documentation describes the provided service actions that can be used
-- [ ] `docs-high-level-description` - The documentation includes a high-level description of the integration brand, product, or service
-- [ ] `docs-installation-instructions` - The documentation provides step-by-step installation instructions for the integration, including, if needed, prerequisites
-- [ ] `docs-removal-instructions` - The documentation provides removal instructions
+    - [X] Uses `ConfigEntry.data` and `ConfigEntry.options` correctly
+- [X] `dependency-transparency` - Dependency transparency
+- [X] `docs-actions` - The documentation describes the provided service actions that can be used
+- [X] `docs-high-level-description` - The documentation includes a high-level description of the integration brand, product, or service
+- [X] `docs-installation-instructions` - The documentation provides step-by-step installation instructions for the integration, including, if needed, prerequisites
+- [X] `docs-removal-instructions` - The documentation provides removal instructions
 - [ ] `entity-event-setup` - Entity events are subscribed in the correct lifecycle methods
-- [ ] `entity-unique-id` - Entities have a unique ID
+- [X] `entity-unique-id` - Entities have a unique ID
 - [ ] `has-entity-name` - Entities use has_entity_name = True
 - [ ] `runtime-data` - Use ConfigEntry.runtime_data to store runtime data
 - [ ] `test-before-configure` - Test a connection in the config flow
