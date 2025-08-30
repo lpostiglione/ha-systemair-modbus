@@ -31,6 +31,7 @@ class SystemairFan(SystemairEntity, FanEntity):
         SystemairEntity.__init__(self, coordinator, name, entry_id)
         self._attr_unique_id = f"systemair_{entry_id}_fan"
         self._attr_has_entity_name = True
+        self._attr_name = "Fan"
         self._attr_is_on = True  # Off is not supported by design
         self._percentage: Optional[int] = None
 

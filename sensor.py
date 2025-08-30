@@ -27,15 +27,15 @@ class SensorDesc:
 
 
 SENSORS: list[SensorDesc] = [
-    SensorDesc("Systemair Heating Target", REG_HC_TEMP_SP, "°C", SensorDeviceClass.TEMPERATURE, None),
-    SensorDesc("Systemair Supply Air Temp", REG_HC_TEMP_IN1, "°C", SensorDeviceClass.TEMPERATURE, SCALE_TENTH),
-    SensorDesc("Systemair Extract Air Temp", REG_HC_TEMP_IN2, "°C", SensorDeviceClass.TEMPERATURE, SCALE_TENTH),
-    SensorDesc("Systemair Overheat/Frost Temp", REG_HC_TEMP_IN4, "°C", SensorDeviceClass.TEMPERATURE, SCALE_TENTH),
-    SensorDesc("Systemair Outdoor Air Temp", REG_HC_TEMP_IN5, "°C", SensorDeviceClass.TEMPERATURE, SCALE_TENTH),
-    SensorDesc("Systemair Supply Fan RPM", REG_FAN_SF_RPM, "rpm", None, None),
-    SensorDesc("Systemair Extract Fan RPM", REG_FAN_EF_RPM, "rpm", None, None),
-    SensorDesc("Systemair Filter Period", REG_FILTER_PER, "months", None, None),
-    SensorDesc("Systemair Filter Days Since Change", REG_FILTER_DAYS, "days", None, None),
+    SensorDesc("Heating target", REG_HC_TEMP_SP, "°C", SensorDeviceClass.TEMPERATURE, None),
+    SensorDesc("Supply air temperature", REG_HC_TEMP_IN1, "°C", SensorDeviceClass.TEMPERATURE, SCALE_TENTH),
+    SensorDesc("Extract air temperature", REG_HC_TEMP_IN2, "°C", SensorDeviceClass.TEMPERATURE, SCALE_TENTH),
+    SensorDesc("Overheat/Frost temperature", REG_HC_TEMP_IN4, "°C", SensorDeviceClass.TEMPERATURE, SCALE_TENTH),
+    SensorDesc("Outdoor air temperature", REG_HC_TEMP_IN5, "°C", SensorDeviceClass.TEMPERATURE, SCALE_TENTH),
+    SensorDesc("Supply fan RPM", REG_FAN_SF_RPM, "rpm", None, None),
+    SensorDesc("Extract fan RPM", REG_FAN_EF_RPM, "rpm", None, None),
+    SensorDesc("Filter period", REG_FILTER_PER, "months", None, None),
+    SensorDesc("Filter days since change", REG_FILTER_DAYS, "days", None, None),
 ]
 
 
@@ -49,11 +49,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 
     # Diagnostic sensors (disabled by default)
     entities.extend([
-        SystemairDiagnosticText(coord, name, entry_id, "Systemair Model", lambda d: SYSTEM_TYPE_MAP.get(int(d.get(REG_SYSTEM_TYPE))) if d.get(REG_SYSTEM_TYPE) is not None else None),
-        SystemairDiagnosticNumber(coord, name, entry_id, "Systemair System Type", REG_SYSTEM_TYPE),
-        SystemairDiagnosticText(coord, name, entry_id, "Systemair Firmware Version", lambda d: _fmt_ver(d.get(REG_SYSTEM_PROG_V_HIGH), d.get(REG_SYSTEM_PROG_V_MID), d.get(REG_SYSTEM_PROG_V_LOW))),
-        SystemairDiagnosticText(coord, name, entry_id, "Systemair Bootloader Version", lambda d: _fmt_ver(d.get(REG_SYSTEM_BOOT_PROG_V_HIGH), d.get(REG_SYSTEM_BOOT_PROG_V_MID), d.get(REG_SYSTEM_BOOT_PROG_V_LOW))),
-        SystemairDiagnosticText(coord, name, entry_id, "Systemair Program State", _prog_state_text),
+        SystemairDiagnosticText(coord, name, entry_id, "Model", lambda d: SYSTEM_TYPE_MAP.get(int(d.get(REG_SYSTEM_TYPE))) if d.get(REG_SYSTEM_TYPE) is not None else None, unique_suffix="systemair_model"),
+        SystemairDiagnosticNumber(coord, name, entry_id, "System type", REG_SYSTEM_TYPE),
+        SystemairDiagnosticText(coord, name, entry_id, "Firmware version", lambda d: _fmt_ver(d.get(REG_SYSTEM_PROG_V_HIGH), d.get(REG_SYSTEM_PROG_V_MID), d.get(REG_SYSTEM_PROG_V_LOW)), unique_suffix="systemair_firmware_version"),
+        SystemairDiagnosticText(coord, name, entry_id, "Bootloader version", lambda d: _fmt_ver(d.get(REG_SYSTEM_BOOT_PROG_V_HIGH), d.get(REG_SYSTEM_BOOT_PROG_V_MID), d.get(REG_SYSTEM_BOOT_PROG_V_LOW)), unique_suffix="systemair_bootloader_version"),
+        SystemairDiagnosticText(coord, name, entry_id, "Program state", _prog_state_text, unique_suffix="systemair_program_state"),
     ])
 
     async_add_entities(entities)
@@ -96,7 +96,7 @@ class SystemairRotorStateText(SystemairEntity, SensorEntity):
     def __init__(self, coordinator, name, entry_id: str):
         SystemairEntity.__init__(self, coordinator, name, entry_id)
         self._attr_unique_id = f"systemair_{entry_id}_rotor_state"
-        self._attr_name = "Systemair Rotor State"
+        self._attr_name = "Rotor state"
         self._attr_native_value = None
 
     async def async_added_to_hass(self):
@@ -160,8 +160,8 @@ class SystemairDiagnosticNumber(_DiagBase):
 
 
 class SystemairDiagnosticText(_DiagBase):
-    def __init__(self, coordinator, name, entry_id: str, sensor_name: str, compute_fn):
-        super().__init__(coordinator, name, entry_id, sensor_name.lower().replace(" ", "_"))
+    def __init__(self, coordinator, name, entry_id: str, sensor_name: str, compute_fn, unique_suffix: str | None = None):
+        super().__init__(coordinator, name, entry_id, unique_suffix or sensor_name.lower().replace(" ", "_"))
         self._attr_unique_id = f"systemair_{entry_id}_{self._unique_suffix}"
         self._attr_name = sensor_name
         self._compute_fn = compute_fn

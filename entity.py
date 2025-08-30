@@ -18,6 +18,8 @@ class SystemairEntity:
         self.coordinator = coordinator
         self._name = name
         self._entry_id = entry_id
+        # Entities should use device name as device name, and entity provides function-only name
+        self._attr_has_entity_name = True
 
     @property
     def device_info(self) -> DeviceInfo:

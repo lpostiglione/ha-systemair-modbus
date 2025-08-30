@@ -23,7 +23,7 @@ class SystemairHeatingLevel(SystemairEntity, SelectEntity):
     def __init__(self, coordinator, name, entry_id: str):
         SystemairEntity.__init__(self, coordinator, name, entry_id)
         self._attr_unique_id = f"systemair_{entry_id}_heating_level"
-        self._attr_name = f"{name} Heating Level"
+        self._attr_name = "Heating level"
         self._attr_current_option = "Off"
 
     async def async_added_to_hass(self):
