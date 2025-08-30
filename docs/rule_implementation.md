@@ -34,7 +34,7 @@
 
 ## Gold
 - [X] `devices` - The integration creates devices
-- [ ] `diagnostics` - Implements diagnostics
+- [X] `diagnostics` - Implements diagnostics
 - [ ] `discovery-update-info` - Integration uses discovery info to update network information
 - [ ] `discovery` - Devices can be discovered
 - [ ] `docs-data-update` - The documentation describes how data is updated
