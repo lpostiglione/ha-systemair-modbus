@@ -2,6 +2,7 @@ from __future__ import annotations
 from homeassistant.components.select import SelectEntity
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.helpers.entity import EntityCategory
 
 from .const import DOMAIN, REG_HC_TEMP_LVL
 from .entity import SystemairEntity
@@ -19,6 +20,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 
 class SystemairHeatingLevel(SystemairEntity, SelectEntity):
     _attr_options = OPTIONS
+    _attr_entity_category = EntityCategory.CONFIG
 
     def __init__(self, coordinator, name, entry_id: str):
         SystemairEntity.__init__(self, coordinator, name, entry_id)

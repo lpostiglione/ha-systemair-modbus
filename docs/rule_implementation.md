@@ -45,9 +45,9 @@
 - [ ] `docs-troubleshooting` - The documentation provides troubleshooting information
 - [ ] `docs-use-cases` - The documentation describes use cases to illustrate how this integration can be used
 - [ ] `dynamic-devices` - Devices added after integration setup
-- [ ] `entity-category` - Entities are assigned an appropriate EntityCategory
-- [ ] `entity-device-class` - Entities use device classes where possible
-- [ ] `entity-disabled-by-default` - Integration disables less popular (or noisy) entities
+- [X] `entity-category` - Entities are assigned an appropriate EntityCategory
+- [X] `entity-device-class` - Entities use device classes where possible
+- [X] `entity-disabled-by-default` - Integration disables less popular (or noisy) entities
 - [ ] `entity-translations` - Entities have translated names
 - [ ] `exception-translations` - Exception messages are translatable
 - [ ] `icon-translations` - Entities implement icon translations
