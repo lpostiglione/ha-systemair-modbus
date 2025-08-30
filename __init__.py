@@ -21,6 +21,7 @@ _LOGGER = logging.getLogger(__name__)
 
 PLATFORMS: list[Platform] = [Platform.FAN, Platform.SENSOR, Platform.SELECT]
 
+
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Systemair from a config entry."""
     host = entry.data[CONF_HOST]
@@ -41,12 +42,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True
 
+
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     if unload_ok:
         hass.data[DOMAIN].pop(entry.entry_id, None)
     return unload_ok
+
 
 class SystemairCoordinator(DataUpdateCoordinator[dict[int, int]]):
     """Coordinator that polls required registers in block reads."""
@@ -73,32 +76,34 @@ class SystemairCoordinator(DataUpdateCoordinator[dict[int, int]]):
             await self.client.connect()
         try:
             # Blocked reads to minimize roundtrips
-            rr1 = await self.client.read_holding_registers(address=100, count=25, slave=self.unit)  # 101,111,112
-            rr2 = await self.client.read_holding_registers(address=200, count=40, slave=self.unit)  # 207,208,214..218
-            rr3 = await self.client.read_holding_registers(address=350, count=10, slave=self.unit)  # 351
-            rr4 = await self.client.read_holding_registers(address=600, count=10, slave=self.unit)  # 601,602
+            rr1 = await self.client.read_holding_registers(address=100, count=12, slave=self.unit)  # 101,111,112
+            rr2 = await self.client.read_holding_registers(address=206, count=12, slave=self.unit)  # 207,208,214..218
+            rr3 = await self.client.read_holding_registers(address=350, slave=self.unit)  # 351
+            rr4 = await self.client.read_holding_registers(address=600, count=2, slave=self.unit)  # 601,602
 
             if any(r.isError() for r in (rr1, rr2, rr3, rr4)):
                 raise UpdateFailed("Modbus read error")
 
             data: dict[int, int] = {}
-            def get(rr, base, reg): return rr.registers[reg - base]
 
-            data[REG_FAN_SPEED_LEVEL] = get(rr1, 100, REG_FAN_SPEED_LEVEL)
-            data[REG_FAN_SF_RPM] = get(rr1, 100, REG_FAN_SF_RPM)
-            data[REG_FAN_EF_RPM] = get(rr1, 100, REG_FAN_EF_RPM)
+            def get(rr, base, reg):
+                return rr.registers[reg - base]
 
-            data[REG_HC_TEMP_LVL] = get(rr2, 200, REG_HC_TEMP_LVL)
-            data[REG_HC_TEMP_SP]  = get(rr2, 200, REG_HC_TEMP_SP)
-            data[REG_HC_TEMP_IN1] = get(rr2, 200, REG_HC_TEMP_IN1)
-            data[REG_HC_TEMP_IN2] = get(rr2, 200, REG_HC_TEMP_IN2)
-            data[REG_HC_TEMP_IN4] = get(rr2, 200, REG_HC_TEMP_IN4)
-            data[REG_HC_TEMP_IN5] = get(rr2, 200, REG_HC_TEMP_IN5)
+            data[REG_FAN_SPEED_LEVEL] = get(rr1, 101, REG_FAN_SPEED_LEVEL)
+            data[REG_FAN_SF_RPM] = get(rr1, 101, REG_FAN_SF_RPM)
+            data[REG_FAN_EF_RPM] = get(rr1, 101, REG_FAN_EF_RPM)
 
-            data[REG_ROTOR_STATE] = get(rr3, 350, REG_ROTOR_STATE)
+            data[REG_HC_TEMP_LVL] = get(rr2, 207, REG_HC_TEMP_LVL)
+            data[REG_HC_TEMP_SP] = get(rr2, 207, REG_HC_TEMP_SP)
+            data[REG_HC_TEMP_IN1] = get(rr2, 207, REG_HC_TEMP_IN1)
+            data[REG_HC_TEMP_IN2] = get(rr2, 207, REG_HC_TEMP_IN2)
+            data[REG_HC_TEMP_IN4] = get(rr2, 207, REG_HC_TEMP_IN4)
+            data[REG_HC_TEMP_IN5] = get(rr2, 207, REG_HC_TEMP_IN5)
 
-            data[REG_FILTER_PER]  = get(rr4, 600, REG_FILTER_PER)
-            data[REG_FILTER_DAYS] = get(rr4, 600, REG_FILTER_DAYS)
+            data[REG_ROTOR_STATE] = rr3.registers[0]
+
+            data[REG_FILTER_PER] = get(rr4, 601, REG_FILTER_PER)
+            data[REG_FILTER_DAYS] = get(rr4, 601, REG_FILTER_DAYS)
 
             return data
         except Exception as err:
@@ -107,4 +112,5 @@ class SystemairCoordinator(DataUpdateCoordinator[dict[int, int]]):
     async def async_write_register(self, address: int, value: int):
         if not self.client or not self.client.connected:
             await self.client.connect()
-        await self.client.write_register(address=address, value=value, slave=self.unit)
+        # Adjust 1-based register address from docs to 0-based for pymodbus
+        await self.client.write_register(address=(address - 1), value=value, slave=self.unit)

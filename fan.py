@@ -6,8 +6,8 @@ from homeassistant.core import HomeAssistant, callback
 
 from .const import DOMAIN, REG_FAN_SPEED_LEVEL
 
-PRESETS = ["off", "low", "medium", "high"]
-LEVEL_MAP = {"off":0, "low":1, "medium":2, "high":3}
+PRESETS = ["Off", "Low", "Medium", "High"]
+LEVEL_MAP = {"Off":0, "Low":1, "Medium":2, "High":3}
 INV_LEVEL = {v:k for k,v in LEVEL_MAP.items()}
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
