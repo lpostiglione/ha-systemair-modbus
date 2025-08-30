@@ -3,9 +3,7 @@
   "name": "Systemair VSR150",
   "version": "0.1.0",
   "documentation": "",
-  "requirements": [
-    "pymodbus==3.6.6"
-  ],
+  "requirements": ["pymodbus>=3.9.2,<4.0.0"],
   "codeowners": ["@lpostiglione"],
   "iot_class": "local_polling",
   "integration_type": "device",

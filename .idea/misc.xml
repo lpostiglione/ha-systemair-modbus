@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Black">
-    <option name="sdkName" value="Python 3.13 (Systemair_VSR150_HA)" />
+    <option name="sdkName" value="Python 3.13 (systemair_vsr150)" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.13 (Systemair_VSR150_HA)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.13 virtualenv at ~/Workspace/systemair_vsr150/.venv" project-jdk-type="Python SDK" />
 </project>

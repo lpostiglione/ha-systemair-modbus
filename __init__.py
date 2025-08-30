@@ -19,7 +19,7 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
-PLATFORMS: list[Platform] = [Platform.FAN, Platform.SENSOR, Platform.SELECT, Platform.BUTTON]
+PLATFORMS: list[Platform] = [Platform.FAN, Platform.SENSOR, Platform.SELECT]
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Systemair from a config entry."""
@@ -73,10 +73,10 @@ class SystemairCoordinator(DataUpdateCoordinator[dict[int, int]]):
             await self.client.connect()
         try:
             # Blocked reads to minimize roundtrips
-            rr1 = await self.client.read_holding_registers(address=100, count=25, unit=self.unit)  # 101,111,112
-            rr2 = await self.client.read_holding_registers(address=200, count=40, unit=self.unit)  # 207,208,214..218
-            rr3 = await self.client.read_holding_registers(address=350, count=10, unit=self.unit)  # 351
-            rr4 = await self.client.read_holding_registers(address=600, count=10, unit=self.unit)  # 601,602
+            rr1 = await self.client.read_holding_registers(address=100, count=25, slave=self.unit)  # 101,111,112
+            rr2 = await self.client.read_holding_registers(address=200, count=40, slave=self.unit)  # 207,208,214..218
+            rr3 = await self.client.read_holding_registers(address=350, count=10, slave=self.unit)  # 351
+            rr4 = await self.client.read_holding_registers(address=600, count=10, slave=self.unit)  # 601,602
 
             if any(r.isError() for r in (rr1, rr2, rr3, rr4)):
                 raise UpdateFailed("Modbus read error")
@@ -107,4 +107,4 @@ class SystemairCoordinator(DataUpdateCoordinator[dict[int, int]]):
     async def async_write_register(self, address: int, value: int):
         if not self.client or not self.client.connected:
             await self.client.connect()
-        await self.client.write_register(address=address, value=value, unit=self.unit)
+        await self.client.write_register(address=address, value=value, slave=self.unit)
