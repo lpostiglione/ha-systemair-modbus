@@ -22,6 +22,35 @@ REG_ROTOR_STATE = 351  # 0..11
 REG_FILTER_PER = 601  # months
 REG_FILTER_DAYS = 602  # days
 
+# System parameters (501+)
+REG_SYSTEM_TYPE = 501
+REG_SYSTEM_PROG_V_HIGH = 502
+REG_SYSTEM_PROG_V_MID = 503
+REG_SYSTEM_PROG_V_LOW = 504
+REG_SYSTEM_BOOT_PROG_V_HIGH = 505
+REG_SYSTEM_BOOT_PROG_V_MID = 506
+REG_SYSTEM_BOOT_PROG_V_LOW = 507
+REG_SYSTEM_PROG_STATE = 508
+
+SYSTEM_TYPE_MAP = {
+    0: "VR400",
+    1: "VR700",
+    2: "VR700DK",
+    3: "VR400DE",
+    4: "VTC300",
+    5: "VTC700",
+    12: "VTR150K",
+    13: "VTR200B",
+    14: "VSR300",
+    15: "VSR500",
+    16: "VSR150",
+    17: "VTR300",
+    18: "VTR500",
+    19: "VSR300DE",
+    20: "VTC200",
+    21: "VTC100",
+}
+
 SCALE_TENTH = 0.1
 # Persist settings to non-volatile memory
 REG_STORE_NVM = 549            # write 165 to commit to NVM
