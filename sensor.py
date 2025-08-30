@@ -58,7 +58,7 @@ class SystemairRegisterSensor(SensorEntity):
         if desc.device_class:
             self._attr_device_class = desc.device_class
         self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, "systemair_vsr150")},
+            identifiers={(DOMAIN, "systemair")},
             name=name,
             manufacturer="Systemair",
             model="VSR150",
@@ -90,7 +90,7 @@ class SystemairRotorStateText(SensorEntity):
         self._attr_unique_id = "systemair_rotor_state"
         self._attr_name = "Systemair Rotor State"
         self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, "systemair_vsr150")},
+            identifiers={(DOMAIN, "systemair")},
             name=name,
             manufacturer="Systemair",
             model="VSR150",

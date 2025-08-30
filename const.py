@@ -1,5 +1,5 @@
 DOMAIN = "systemair"
-DEFAULT_NAME = "Systemair VSR150"
+DEFAULT_NAME = "Systemair Ventilation"
 CONF_HOST = "host"
 CONF_PORT = "port"
 CONF_UNIT_ID = "unit_id"
