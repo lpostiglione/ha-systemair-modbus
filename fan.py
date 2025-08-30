@@ -22,13 +22,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     data = hass.data[DOMAIN][entry.entry_id]
     coord = data["coordinator"]
     name = data["name"]
-    async_add_entities([SystemairFan(coord, name)])
+    entry_id = entry.entry_id
+    async_add_entities([SystemairFan(coord, name, entry_id)])
 
 
 class SystemairFan(SystemairEntity, FanEntity):
-    def __init__(self, coordinator, name):
-        SystemairEntity.__init__(self, coordinator, name)
-        self._attr_unique_id = "systemair_fan"
+    def __init__(self, coordinator, name, entry_id: str):
+        SystemairEntity.__init__(self, coordinator, name, entry_id)
+        self._attr_unique_id = f"systemair_{entry_id}_fan"
         self._attr_has_entity_name = True
         self._attr_is_on = True  # Off is not supported by design
         self._percentage: Optional[int] = None

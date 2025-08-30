@@ -14,9 +14,10 @@ class SystemairEntity:
     Provides shared device information based on coordinator data.
     """
 
-    def __init__(self, coordinator, name: str) -> None:
+    def __init__(self, coordinator, name: str, entry_id: str) -> None:
         self.coordinator = coordinator
         self._name = name
+        self._entry_id = entry_id
 
     @property
     def device_info(self) -> DeviceInfo:
@@ -32,7 +33,7 @@ class SystemairEntity:
             except (TypeError, ValueError):
                 sw_version = None
         return DeviceInfo(
-            identifiers={(DOMAIN, "systemair")},
+            identifiers={(DOMAIN, f"systemair_{self._entry_id}")},
             name=self._name,
             manufacturer="Systemair",
             model=model or "Unknown",

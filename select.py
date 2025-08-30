@@ -14,14 +14,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     data = hass.data[DOMAIN][entry.entry_id]
     coord = data["coordinator"]
     name = data["name"]
-    async_add_entities([SystemairHeatingLevel(coord, name)])
+    entry_id = entry.entry_id
+    async_add_entities([SystemairHeatingLevel(coord, name, entry_id)])
 
 class SystemairHeatingLevel(SystemairEntity, SelectEntity):
     _attr_options = OPTIONS
 
-    def __init__(self, coordinator, name):
-        SystemairEntity.__init__(self, coordinator, name)
-        self._attr_unique_id = "systemair_heating_level"
+    def __init__(self, coordinator, name, entry_id: str):
+        SystemairEntity.__init__(self, coordinator, name, entry_id)
+        self._attr_unique_id = f"systemair_{entry_id}_heating_level"
         self._attr_name = f"{name} Heating Level"
         self._attr_current_option = "Off"
 

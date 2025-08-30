@@ -43,16 +43,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     data = hass.data[DOMAIN][entry.entry_id]
     coord = data["coordinator"]
     name = data["name"]
-    entities = [SystemairRegisterSensor(coord, name, d) for d in SENSORS]
-    entities.append(SystemairRotorStateText(coord, name))  # friendly rotor text
+    entry_id = entry.entry_id
+    entities = [SystemairRegisterSensor(coord, name, entry_id, d) for d in SENSORS]
+    entities.append(SystemairRotorStateText(coord, name, entry_id))  # friendly rotor text
 
     # Diagnostic sensors (disabled by default)
     entities.extend([
-        SystemairDiagnosticText(coord, name, "Systemair Model", lambda d: SYSTEM_TYPE_MAP.get(int(d.get(REG_SYSTEM_TYPE))) if d.get(REG_SYSTEM_TYPE) is not None else None),
-        SystemairDiagnosticNumber(coord, name, "Systemair System Type", REG_SYSTEM_TYPE),
-        SystemairDiagnosticText(coord, name, "Systemair Firmware Version", lambda d: _fmt_ver(d.get(REG_SYSTEM_PROG_V_HIGH), d.get(REG_SYSTEM_PROG_V_MID), d.get(REG_SYSTEM_PROG_V_LOW))),
-        SystemairDiagnosticText(coord, name, "Systemair Bootloader Version", lambda d: _fmt_ver(d.get(REG_SYSTEM_BOOT_PROG_V_HIGH), d.get(REG_SYSTEM_BOOT_PROG_V_MID), d.get(REG_SYSTEM_BOOT_PROG_V_LOW))),
-        SystemairDiagnosticText(coord, name, "Systemair Program State", _prog_state_text),
+        SystemairDiagnosticText(coord, name, entry_id, "Systemair Model", lambda d: SYSTEM_TYPE_MAP.get(int(d.get(REG_SYSTEM_TYPE))) if d.get(REG_SYSTEM_TYPE) is not None else None),
+        SystemairDiagnosticNumber(coord, name, entry_id, "Systemair System Type", REG_SYSTEM_TYPE),
+        SystemairDiagnosticText(coord, name, entry_id, "Systemair Firmware Version", lambda d: _fmt_ver(d.get(REG_SYSTEM_PROG_V_HIGH), d.get(REG_SYSTEM_PROG_V_MID), d.get(REG_SYSTEM_PROG_V_LOW))),
+        SystemairDiagnosticText(coord, name, entry_id, "Systemair Bootloader Version", lambda d: _fmt_ver(d.get(REG_SYSTEM_BOOT_PROG_V_HIGH), d.get(REG_SYSTEM_BOOT_PROG_V_MID), d.get(REG_SYSTEM_BOOT_PROG_V_LOW))),
+        SystemairDiagnosticText(coord, name, entry_id, "Systemair Program State", _prog_state_text),
     ])
 
     async_add_entities(entities)
@@ -61,10 +62,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 class SystemairRegisterSensor(SystemairEntity, SensorEntity):
     should_poll = False
 
-    def __init__(self, coordinator, name, desc: SensorDesc):
-        SystemairEntity.__init__(self, coordinator, name)
+    def __init__(self, coordinator, name, entry_id: str, desc: SensorDesc):
+        SystemairEntity.__init__(self, coordinator, name, entry_id)
         self._desc = desc
-        self._attr_unique_id = f"systemair_{desc.reg}"
+        self._attr_unique_id = f"systemair_{entry_id}_{desc.reg}"
         self._attr_name = desc.name
         if desc.unit:
             self._attr_native_unit_of_measurement = desc.unit
@@ -92,9 +93,9 @@ class SystemairRegisterSensor(SystemairEntity, SensorEntity):
 class SystemairRotorStateText(SystemairEntity, SensorEntity):
     should_poll = False
 
-    def __init__(self, coordinator, name):
-        SystemairEntity.__init__(self, coordinator, name)
-        self._attr_unique_id = "systemair_rotor_state"
+    def __init__(self, coordinator, name, entry_id: str):
+        SystemairEntity.__init__(self, coordinator, name, entry_id)
+        self._attr_unique_id = f"systemair_{entry_id}_rotor_state"
         self._attr_name = "Systemair Rotor State"
         self._attr_native_value = None
 
@@ -133,8 +134,8 @@ class _DiagBase(SystemairEntity, SensorEntity):
     _attr_entity_category = EntityCategory.DIAGNOSTIC
     _attr_entity_registry_enabled_default = False
 
-    def __init__(self, coordinator, name, unique_suffix: str):
-        SystemairEntity.__init__(self, coordinator, name)
+    def __init__(self, coordinator, name, entry_id: str, unique_suffix: str):
+        SystemairEntity.__init__(self, coordinator, name, entry_id)
         self._unique_suffix = unique_suffix
 
     async def async_added_to_hass(self):
@@ -147,9 +148,9 @@ class _DiagBase(SystemairEntity, SensorEntity):
 
 
 class SystemairDiagnosticNumber(_DiagBase):
-    def __init__(self, coordinator, name, sensor_name: str, reg: int):
-        super().__init__(coordinator, name, f"diag_{reg}")
-        self._attr_unique_id = f"systemair_{self._unique_suffix}"
+    def __init__(self, coordinator, name, entry_id: str, sensor_name: str, reg: int):
+        super().__init__(coordinator, name, entry_id, f"diag_{reg}")
+        self._attr_unique_id = f"systemair_{entry_id}_{self._unique_suffix}"
         self._attr_name = sensor_name
         self._reg = reg
 
@@ -159,9 +160,9 @@ class SystemairDiagnosticNumber(_DiagBase):
 
 
 class SystemairDiagnosticText(_DiagBase):
-    def __init__(self, coordinator, name, sensor_name: str, compute_fn):
-        super().__init__(coordinator, name, sensor_name.lower().replace(" ", "_"))
-        self._attr_unique_id = f"systemair_{self._unique_suffix}"
+    def __init__(self, coordinator, name, entry_id: str, sensor_name: str, compute_fn):
+        super().__init__(coordinator, name, entry_id, sensor_name.lower().replace(" ", "_"))
+        self._attr_unique_id = f"systemair_{entry_id}_{self._unique_suffix}"
         self._attr_name = sensor_name
         self._compute_fn = compute_fn
         self._attr_native_value = None
