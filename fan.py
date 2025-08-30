@@ -3,7 +3,6 @@ from typing import Optional
 import math
 
 from homeassistant.components.fan import FanEntity, FanEntityFeature
-from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.util.percentage import (
@@ -12,7 +11,8 @@ from homeassistant.util.percentage import (
 )
 from homeassistant.util.scaling import int_states_in_range
 
-from .const import DOMAIN, REG_FAN_SPEED_LEVEL, REG_SYSTEM_TYPE, REG_SYSTEM_PROG_V_HIGH, REG_SYSTEM_PROG_V_MID, REG_SYSTEM_PROG_V_LOW, SYSTEM_TYPE_MAP
+from .const import DOMAIN, REG_FAN_SPEED_LEVEL
+from .entity import SystemairEntity
 
 # Device supports 3 discrete speeds (1..3). Off (0) is intentionally not supported.
 SPEED_RANGE = (1, 3)
@@ -25,36 +25,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     async_add_entities([SystemairFan(coord, name)])
 
 
-class SystemairFan(FanEntity):
+class SystemairFan(SystemairEntity, FanEntity):
     def __init__(self, coordinator, name):
-        self.coordinator = coordinator
+        SystemairEntity.__init__(self, coordinator, name)
         self._attr_unique_id = "systemair_fan"
         self._attr_has_entity_name = True
-        self._name = name
         self._attr_is_on = True  # Off is not supported by design
         self._percentage: Optional[int] = None
 
     async def async_added_to_hass(self):
         self.async_on_remove(self.coordinator.async_add_listener(self._handle_coordinator_update))
         await self.coordinator.async_request_refresh()
-
-    @property
-    def device_info(self) -> DeviceInfo:
-        model_code = self.coordinator.data.get(REG_SYSTEM_TYPE)
-        model = SYSTEM_TYPE_MAP.get(int(model_code)) if model_code is not None else None
-        fw_h = self.coordinator.data.get(REG_SYSTEM_PROG_V_HIGH)
-        fw_m = self.coordinator.data.get(REG_SYSTEM_PROG_V_MID)
-        fw_l = self.coordinator.data.get(REG_SYSTEM_PROG_V_LOW)
-        sw_version = None
-        if None not in (fw_h, fw_m, fw_l):
-            sw_version = f"{int(fw_h)}.{int(fw_m)}.{int(fw_l)}"
-        return DeviceInfo(
-            identifiers={(DOMAIN, "systemair")},
-            name=self._name,
-            manufacturer="Systemair",
-            model=model or "Unknown",
-            sw_version=sw_version,
-        )
 
     @callback
     def _handle_coordinator_update(self):

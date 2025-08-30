@@ -1,13 +1,13 @@
 from __future__ import annotations
 from dataclasses import dataclass
 from homeassistant.components.sensor import SensorEntity, SensorDeviceClass
-from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
+from .entity import SystemairEntity
 
 from .const import (
-    DOMAIN, DEFAULT_NAME, SCALE_TENTH,
+    DOMAIN, SCALE_TENTH,
     REG_FAN_SF_RPM, REG_FAN_EF_RPM,
     REG_HC_TEMP_SP, REG_HC_TEMP_IN1, REG_HC_TEMP_IN2, REG_HC_TEMP_IN4, REG_HC_TEMP_IN5,
     REG_ROTOR_STATE, REG_FILTER_PER, REG_FILTER_DAYS,
@@ -59,12 +59,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     async_add_entities(entities)
 
 
-class SystemairRegisterSensor(SensorEntity):
+class SystemairRegisterSensor(SystemairEntity, SensorEntity):
     should_poll = False
 
     def __init__(self, coordinator, name, desc: SensorDesc):
-        self.coordinator = coordinator
-        self._name = name
+        SystemairEntity.__init__(self, coordinator, name)
         self._desc = desc
         self._attr_unique_id = f"systemair_{desc.reg}"
         self._attr_name = desc.name
@@ -72,24 +71,6 @@ class SystemairRegisterSensor(SensorEntity):
             self._attr_native_unit_of_measurement = desc.unit
         if desc.device_class:
             self._attr_device_class = desc.device_class
-
-    @property
-    def device_info(self) -> DeviceInfo:
-        model_code = self.coordinator.data.get(REG_SYSTEM_TYPE)
-        model = SYSTEM_TYPE_MAP.get(int(model_code)) if model_code is not None else None
-        fw_h = self.coordinator.data.get(REG_SYSTEM_PROG_V_HIGH)
-        fw_m = self.coordinator.data.get(REG_SYSTEM_PROG_V_MID)
-        fw_l = self.coordinator.data.get(REG_SYSTEM_PROG_V_LOW)
-        sw_version = None
-        if None not in (fw_h, fw_m, fw_l):
-            sw_version = f"{int(fw_h)}.{int(fw_m)}.{int(fw_l)}"
-        return DeviceInfo(
-            identifiers={(DOMAIN, "systemair")},
-            name=self._name,
-            manufacturer="Systemair",
-            model=model or "Unknown",
-            sw_version=sw_version,
-        )
 
     async def async_added_to_hass(self):
         self.async_on_remove(self.coordinator.async_add_listener(self._handle_coordinator_update))
@@ -109,33 +90,14 @@ class SystemairRegisterSensor(SensorEntity):
                 self._attr_native_value = val
         self.async_write_ha_state()
 
-class SystemairRotorStateText(SensorEntity):
+class SystemairRotorStateText(SystemairEntity, SensorEntity):
     should_poll = False
 
     def __init__(self, coordinator, name):
-        self.coordinator = coordinator
-        self._name = name
+        SystemairEntity.__init__(self, coordinator, name)
         self._attr_unique_id = "systemair_rotor_state"
         self._attr_name = "Systemair Rotor State"
         self._attr_native_value = None
-
-    @property
-    def device_info(self) -> DeviceInfo:
-        model_code = self.coordinator.data.get(REG_SYSTEM_TYPE)
-        model = SYSTEM_TYPE_MAP.get(int(model_code)) if model_code is not None else None
-        fw_h = self.coordinator.data.get(REG_SYSTEM_PROG_V_HIGH)
-        fw_m = self.coordinator.data.get(REG_SYSTEM_PROG_V_MID)
-        fw_l = self.coordinator.data.get(REG_SYSTEM_PROG_V_LOW)
-        sw_version = None
-        if None not in (fw_h, fw_m, fw_l):
-            sw_version = f"{int(fw_h)}.{int(fw_m)}.{int(fw_l)}"
-        return DeviceInfo(
-            identifiers={(DOMAIN, "systemair")},
-            name=self._name,
-            manufacturer="Systemair",
-            model=model or "Unknown",
-            sw_version=sw_version,
-        )
 
     async def async_added_to_hass(self):
         self.async_on_remove(self.coordinator.async_add_listener(self._handle_coordinator_update))
@@ -167,33 +129,14 @@ def _prog_state_text(data: dict[int, int]):
         return None
 
 
-class _DiagBase(SensorEntity):
+class _DiagBase(SystemairEntity, SensorEntity):
     should_poll = False
     _attr_entity_category = EntityCategory.DIAGNOSTIC
     _attr_entity_registry_enabled_default = False
 
     def __init__(self, coordinator, name, unique_suffix: str):
-        self.coordinator = coordinator
-        self._name = name
+        SystemairEntity.__init__(self, coordinator, name)
         self._unique_suffix = unique_suffix
-
-    @property
-    def device_info(self) -> DeviceInfo:
-        model_code = self.coordinator.data.get(REG_SYSTEM_TYPE)
-        model = SYSTEM_TYPE_MAP.get(int(model_code)) if model_code is not None else None
-        fw_h = self.coordinator.data.get(REG_SYSTEM_PROG_V_HIGH)
-        fw_m = self.coordinator.data.get(REG_SYSTEM_PROG_V_MID)
-        fw_l = self.coordinator.data.get(REG_SYSTEM_PROG_V_LOW)
-        sw_version = None
-        if None not in (fw_h, fw_m, fw_l):
-            sw_version = f"{int(fw_h)}.{int(fw_m)}.{int(fw_l)}"
-        return DeviceInfo(
-            identifiers={(DOMAIN, "systemair")},
-            name=self._name,
-            manufacturer="Systemair",
-            model=model or "Unknown",
-            sw_version=sw_version,
-        )
 
     async def async_added_to_hass(self):
         self.async_on_remove(self.coordinator.async_add_listener(self._handle_coordinator_update))
