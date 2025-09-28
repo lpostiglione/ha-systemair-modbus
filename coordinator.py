@@ -8,6 +8,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 
 from .const import (
     REG_FAN_SPEED_LEVEL, REG_FAN_SF_PWM, REG_FAN_EF_PWM, REG_FAN_SF_RPM, REG_FAN_EF_RPM,
+    REG_FAN_ALLOW_MANUAL_FAN_STOP,
     REG_HC_HEATER_TYPE, REG_HC_COOLER_TYPE, REG_HC_WC_SIGNAL, REG_HC_WH_SIGNAL,
     REG_HC_TEMP_LVL, REG_HC_TEMP_SP,
     REG_HC_TEMP_IN1, REG_HC_TEMP_IN2, REG_HC_TEMP_IN3, REG_HC_TEMP_IN4, REG_HC_TEMP_IN5, REG_HC_PREHEATER_TYPE,
@@ -81,8 +82,8 @@ class SystemairCoordinator(DataUpdateCoordinator[dict[int, int]]):
             await self._ensure_connected()
             try:
                 # Blocked reads to minimize roundtrips
-                # 101..112 (includes fan speed level, SF/EF PWM, SF/EF RPM)
-                rr1 = await self.client.read_holding_registers(address=100, count=12, device_id=self.unit)
+                # 101..114 (includes fan speed level, SF/EF PWM/RPM, and manual stop allowance)
+                rr1 = await self.client.read_holding_registers(address=100, count=14, device_id=self.unit)
                 # 201..220 (heater/cooler types, signals, temp level/sp, temps in1..in5, preheater type)
                 rr2 = await self.client.read_holding_registers(address=200, count=20, device_id=self.unit)
                 # 351 (rotor state)
@@ -112,6 +113,7 @@ class SystemairCoordinator(DataUpdateCoordinator[dict[int, int]]):
                 data[REG_FAN_EF_PWM] = get(rr1, 100, REG_FAN_EF_PWM)
                 data[REG_FAN_SF_RPM] = get(rr1, 100, REG_FAN_SF_RPM)
                 data[REG_FAN_EF_RPM] = get(rr1, 100, REG_FAN_EF_RPM)
+                data[REG_FAN_ALLOW_MANUAL_FAN_STOP] = get(rr1, 100, REG_FAN_ALLOW_MANUAL_FAN_STOP)
 
                 # Heating/Cooling types and signals, temps
                 data[REG_HC_HEATER_TYPE] = get(rr2, 200, REG_HC_HEATER_TYPE)

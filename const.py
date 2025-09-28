@@ -10,6 +10,7 @@ REG_FAN_SF_PWM = 109  # 0..100 % (0-10V)
 REG_FAN_EF_PWM = 110  # 0..100 % (0-10V)
 REG_FAN_SF_RPM = 111
 REG_FAN_EF_RPM = 112
+REG_FAN_ALLOW_MANUAL_FAN_STOP = 114  # 0: CD cannot set off; 1: CD can set off
 
 # Heating/Cooling
 REG_HC_HEATER_TYPE = 201  # 0: No heater, 1: Water, 2: Electrical, 3: Other
