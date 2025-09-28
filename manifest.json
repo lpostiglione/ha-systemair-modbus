@@ -1,7 +1,7 @@
 {
   "domain": "systemair",
   "name": "Systemair Modbus",
-  "version": "0.2.2",
+  "version": "0.3",
   "documentation": "",
   "requirements": [
     "pymodbus~=3.11.0"
