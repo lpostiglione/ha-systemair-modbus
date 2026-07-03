@@ -2,7 +2,7 @@ from __future__ import annotations
 import voluptuous as vol
 
 from homeassistant import config_entries
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.data_entry_flow import FlowResult
 
 from .const import (
@@ -52,6 +52,14 @@ class SystemairConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     VERSION = 1
 
+    @staticmethod
+    @callback
+    def async_get_options_flow(
+        config_entry: config_entries.ConfigEntry,
+    ) -> SystemairOptionsFlowHandler:
+        """Create the options flow."""
+        return SystemairOptionsFlowHandler()
+
     async def async_step_user(self, user_input: dict | None = None) -> FlowResult:
         if user_input is None:
             return self.async_show_form(step_id="user", data_schema=STEP_USER_DATA_SCHEMA)
@@ -80,10 +88,7 @@ class SystemairConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return await self.async_step_user(user_input)
 
 
-class SystemairOptionsFlowHandler(config_entries.OptionsFlow):
-    def __init__(self, config_entry: config_entries.ConfigEntry):
-        self.config_entry = config_entry
-
+class SystemairOptionsFlowHandler(config_entries.OptionsFlowWithReload):
     async def async_step_init(self, user_input: dict | None = None) -> FlowResult:
         if user_input is not None:
             return self.async_create_entry(title="", data=user_input)
@@ -98,7 +103,3 @@ class SystemairOptionsFlowHandler(config_entries.OptionsFlow):
             vol.Required(CONF_SCAN_INTERVAL, default=current[CONF_SCAN_INTERVAL]): int
         })
         return self.async_show_form(step_id="init", data_schema=schema)
-
-
-async def async_get_options_flow(config_entry):
-    return SystemairOptionsFlowHandler(config_entry)

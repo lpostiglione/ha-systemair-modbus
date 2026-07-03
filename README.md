@@ -14,7 +14,7 @@ Note: This is a community integration and is not affiliated with or endorsed by 
 
 ## Prerequisites
 
-- Home Assistant 2025.8.3 or newer.
+- Home Assistant 2025.9.0 or newer (tested up to 2026.7).
 - A compatible Systemair ventilation unit (e.g., VSR/VTR/VTC series) with a Modbus interface available on your network.
 - IP address/hostname of the Modbus TCP interface, TCP port (default 502), and Modbus unit ID (default 1).
 - Network connectivity between Home Assistant and the Systemair device.
@@ -53,3 +53,15 @@ For technical details about the unit’s Modbus registers used by this integrati
 This integration follows standard integration removal. No extra steps are required.
 
 {% include integrations/remove_device_service.md %}
+
+## Development
+
+Tests use pytest with the Home Assistant test harness:
+
+1. Create a virtual environment (Python 3.14.2+ is required by Home Assistant 2026.3+).
+2. Install the test stack: `pip install pytest-homeassistant-custom-component pymodbus`
+3. Run the suite with `.venv/bin/pytest tests/`
+
+Note: run pytest via its console script, not `python -m pytest` — the latter puts the
+repository root on `sys.path`, where this integration's `select.py` shadows the standard
+library `select` module.

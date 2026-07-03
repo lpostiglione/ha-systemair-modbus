@@ -27,6 +27,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 
 
 class SystemairFan(SystemairEntity, FanEntity):
+    _attr_supported_features = (
+        FanEntityFeature.SET_SPEED
+        | FanEntityFeature.TURN_ON
+        | FanEntityFeature.TURN_OFF
+    )
+
     def __init__(self, coordinator, name, entry_id: str):
         SystemairEntity.__init__(self, coordinator, name, entry_id)
         self._attr_unique_id = f"systemair_{entry_id}_fan"
@@ -59,10 +65,6 @@ class SystemairFan(SystemairEntity, FanEntity):
                 self._percentage = ranged_value_to_percentage(SPEED_RANGE, val)
                 self._attr_is_on = True
         self.async_write_ha_state()
-
-    @property
-    def supported_features(self) -> FanEntityFeature:
-        return FanEntityFeature.SET_SPEED
 
     @property
     def percentage(self) -> Optional[int]:
